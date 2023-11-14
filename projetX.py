@@ -28,9 +28,9 @@ def calcule_duree(heure_debut, heure_fin):
 
 def compare_heure(heure1, heure2):
     '''
-    :param heure1: (str) la première heure
-    :param heure2: (str) la seconde heure
-    :return: (int) Résultat de comparaison
+    :param heure1 (str): la première heure
+    :param heure2 (str): la seconde heure
+    :return (int): Résultat de comparaison
     '''
     heure1_minute = calcule_nombre_minutes(heure1)
     heure2_minute = calcule_nombre_minutes(heure2)
@@ -43,7 +43,17 @@ def compare_heure(heure1, heure2):
         return 0
 
 def compare_dates(date1, date2):
+    '''
 
+    Args:
+        date1 (str) : la première date
+        date2 (str) : la deuxième date
+
+    Returns:
+        (int) : Renvoi 1 ou -1 selon si date1 et inférieur à date2
+
+    '''
+    pass
 
 # Programme principal
 def main():
