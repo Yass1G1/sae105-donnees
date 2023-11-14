@@ -43,12 +43,7 @@ def compare_heure(heure1, heure2):
         return 0
 
 def compare_dates(date1, date2):
-    '''
-    juste chiant la fonction
-    :param date1:
-    :param date2:
-    :return:
-    '''
+
 
 # Programme principal
 def main():
