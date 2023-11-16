@@ -37,7 +37,7 @@ def calcule_duree(heure_debut, heure_fin):
         minutes = "0" + str(temps_en_minute % 60)
     return f'{heures}:{minutes}'
 
-def compare_heure(heure1, heure2):
+def compare_heures(heure1, heure2):
     '''
     :param heure1 (str): la première heure
     :param heure2 (str): la seconde heure
@@ -61,7 +61,7 @@ def compare_dates(date1, date2):
         date2 (str) : la deuxième date
 
     Returns:
-        (int) : Renvoi 1 ou -1 selon si date1 est inférieur à date2
+        (int) : Renvoi 1, -1 ou 0 selon si date1 est après, avant ou pareil que date2
 
     '''
     if date1 == date2:
@@ -69,13 +69,17 @@ def compare_dates(date1, date2):
     else:
         date1_l = date1.split("-")
         date2_l = date2.split("-")
-        if date1_l[2] > date2_l[2]:
+        if date1_l[2] > date2_l[2]:  # Compare les années
             return 1
+        elif date1_l[2] < date2_l[2]:
+            return -1
         else:
-            if date1_l[1] > date2_l[1]:
+            if date1_l[1] > date2_l[1]:  # Compare les mois
                 return 1
+            elif date1_l[1] < date2_l[1]:
+                return -1
             else:
-                if date1_l[0] > date2_l[0]:
+                if date1_l[0] > date2_l[0]:  # Compare les jours
                     return 1
                 else:
                     return -1
@@ -94,16 +98,25 @@ def est_date_dans_intervalle(date, debut, fin):
     if date == debut or date == fin:
         return True
     else:
-        if compare_dates(date, debut) == 1:
-            return True
-        elif compare_dates(fin, date) == 1:
+        if compare_dates(date, debut) == 1 and compare_dates(fin, date) == 1:  # début > date > fin
             return True
         else:
             return False
 
 def recupere_champ_csv(evenement, nom):
-    pass
+    event_l = evenement.split(";")
+    csv_template = ["uid", "date", "debut|fin", "modules", "modalite", "evaluation", "theme", "salles", "profs", "groupes"]
+    if nom == "debut":
+        return event_l[2].split("|")[0]
+    elif nom == "fin":
+        return event_l[2].split("|")[1]
+    elif nom not in csv_template:
+        return None
+    else:
+        return event_l[csv_template.index(nom)]
 
+def selectionne_SAE105_groupe(calendrier, groupe):
+    pass
 
 def est_dans_competence_S1(module, competence):
     '''
@@ -125,10 +138,29 @@ def main():
 
     evenement1 = "31-10-2021"
     evenement2 = "17-01-2022"
-    tools_date.get_numero_jour_semaine(evenement1)
-    tools_date.get_numero_jour_semaine(evenement2)
+    event1_l = evenement1.split("-")
+    event2_l = evenement2.split("-")
+    jours = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"]
+
+    print(f'\tJour de {evenement1} : {jours[tools_date.get_numero_jour_semaine(int(event1_l[0]), int(event1_l[1]), int(event1_l[2]))]}')
+    print(f'\tJour de {evenement2} : {jours[tools_date.get_numero_jour_semaine(int(event2_l[0]), int(event2_l[1]), int(event2_l[2]))]}')
+
+    event1_demain = tools_date.lendemain(evenement1).split("-")
+    event2_demain = tools_date.lendemain(evenement2).split("-")
+
+    print(f'\tLendemain de {evenement1} : {jours[tools_date.get_numero_jour_semaine(int(event1_demain[0]), int(event1_demain[1]), int(event1_demain[2]))]}')
+    print(f'\tLendemain de {evenement2} : {jours[tools_date.get_numero_jour_semaine(int(event2_demain[0]), int(event2_demain[1]), int(event2_demain[2]))]}')
+
+    print(est_date_dans_intervalle("15-12-2020", "01-01-2021", "31-01-2021"))
     print(compare_dates(evenement1, evenement2))
-    pass
+
+    print(tools_date.nombre_jours(evenement1, evenement2))
+
+    evenement = "ADE0000988;05-09-2023;08:00|12:00;R3cy16-Pentesting;TP;;;IUT1_T33 res1;LUBINEAU DENIS|VEDEL FRANCK;B2GA"
+    print(evenement.split(";"))
+    print(recupere_champ_csv(evenement, "fin"))
+
+
 
 if __name__ == '__main__':
     main()
