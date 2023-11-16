@@ -13,7 +13,7 @@ import tools_tests
 def import_projet():
     MODULE = "projetX"
     try:
-        import projetX as projet
+        import projet11 as projet
     except:
         sys.path.insert(0, os.path.abspath('.'))
         projet = None

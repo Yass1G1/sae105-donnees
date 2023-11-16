@@ -7,7 +7,7 @@ import tools_tests
 
 # Import du sphinx_projet
 try:
-    import projetX
+    import projet11
 except:
     pass
 MODULE = "projet11"
