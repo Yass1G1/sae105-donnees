@@ -13,7 +13,7 @@ import tools_tests
 def import_projet():
     MODULE = "projetX"
     try:
-        import projet11 as projet
+        import projetX as projet
     except:
         sys.path.insert(0, os.path.abspath('.'))
         projet = None
@@ -406,7 +406,7 @@ class TestExportPng:
             tools_tests.affiche_message_erreur(message)
 
 
-@pytest.mark.echeance1
+@pytest.mark.echeance3
 class TestDeduitAnneeDuModule:
     FONCTION = "deduit_annee_du_module"
 
@@ -458,7 +458,7 @@ La valeur de retour ne correspond pas"""
         assert res == None, tools_tests.affiche_message_erreur(message)
 
 
-@pytest.mark.echeance1
+@pytest.mark.echeance3
 class TestDeduitAnneeDuGroupe:
     FONCTION = "deduit_annee_du_groupe"
 

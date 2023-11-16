@@ -9,6 +9,7 @@ Création: chouitiy, le 14/11/2023
 import tools_constantes
 import projet11
 import tools_date
+import tools_sae
 
 
 # Fonctions
@@ -159,6 +160,8 @@ def main():
     evenement = "ADE0000988;05-09-2023;08:00|12:00;R3cy16-Pentesting;TP;;;IUT1_T33 res1;LUBINEAU DENIS|VEDEL FRANCK;B2GA"
     print(evenement.split(";"))
     print(recupere_champ_csv(evenement, "fin"))
+
+    print(tools_sae.lecture_fichier_evenements("data/calendrier.csv"))
 
 
 
