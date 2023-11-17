@@ -16,8 +16,9 @@ import tools_sae
 
 def calcule_nombre_minutes(heure):
     '''
-    :param heure (str): Heure au format "HH:MM"
-    :return (str): Nombre de minutes
+    Converti un temps donné en heure et minutes, en minutes.
+        :param heure (str): Heure au format "HH:MM"
+        :return (str): Nombre de minutes
     '''
     heures = int(heure.split(":")[0])
     minutes = int(heure.split(":")[1])
@@ -25,9 +26,10 @@ def calcule_nombre_minutes(heure):
 
 def calcule_duree(heure_debut, heure_fin):
     '''
-    :param heure_debut (str): l'heure de début au format "HH:MM"
-    :param heure_fin (str): l'heure de fin au format "HH:MM"
-    :return (str):  la durée au format "HH:MM"
+    Renvoi la durée d'un événement basé sur son heure de début et de fin; au format HH:MM
+        :param heure_debut (str): l'heure de début au format "HH:MM"
+        :param heure_fin (str): l'heure de fin au format "HH:MM"
+        :return (str):  la durée au format "HH:MM"
     '''
     temps_en_minute = calcule_nombre_minutes(heure_fin) - calcule_nombre_minutes(heure_debut)
     heures = temps_en_minute // 60
@@ -40,9 +42,10 @@ def calcule_duree(heure_debut, heure_fin):
 
 def compare_heures(heure1, heure2):
     '''
-    :param heure1 (str): la première heure
-    :param heure2 (str): la seconde heure
-    :return (int): Résultat de comparaison
+    Renvoi 1, 0, ou 1 si heure1 est après, avant ou pareil que heure2.
+        :param heure1 (str): la première heure
+        :param heure2 (str): la seconde heure
+        :return (int): Résultat de comparaison
     '''
     heure1_minute = calcule_nombre_minutes(heure1)
     heure2_minute = calcule_nombre_minutes(heure2)
@@ -56,13 +59,13 @@ def compare_heures(heure1, heure2):
 
 def compare_dates(date1, date2):
     '''
+    Vérifie si date1 est après, avant ou pareil que date2
+        Args:
+            date1 (str) : la première date
+            date2 (str) : la deuxième date
 
-    Args:
-        date1 (str) : la première date
-        date2 (str) : la deuxième date
-
-    Returns:
-        (int) : Renvoi 1, -1 ou 0 selon si date1 est après, avant ou pareil que date2
+        Returns:
+            (int) : Renvoi 1, -1 ou 0 selon si date1 est après, avant ou pareil que date2
 
     '''
     if date1 == date2:
@@ -87,14 +90,14 @@ def compare_dates(date1, date2):
 
 def est_date_dans_intervalle(date, debut, fin):
     '''
+    Vérifie si une date est incluse dans une intervalle donnée.
+        Args:
+            date (str): la date à vérifier
+            debut (str): la date de début d'intervalle (incluse)
+            fin (str): la date de début d'intervalle (incluse)
 
-    Args:
-        date (str): la date à vérifier
-        debut (str): la date de début d'intervalle (incluse)
-        fin (str): la date de début d'intervalle (incluse)
-
-    Returns:
-        (bool): Si la date est dans l'intervalle
+        Returns:
+            (bool): Si la date est dans l'intervalle
     '''
     if date == debut or date == fin:
         return True
@@ -105,6 +108,16 @@ def est_date_dans_intervalle(date, debut, fin):
             return False
 
 def recupere_champ_csv(evenement, nom):
+    '''
+    Renvoi le champ "nom" dans l'évènement spécifié.
+        Args:
+            evenement (str): évènement au format csv
+            nom (str): nom du champ spécifique
+
+        Returns:
+                (str): le champ associé à l'évènement
+
+    '''
     event_l = evenement.split(";")
     csv_template = ["uid", "date", "debut|fin", "modules", "modalite", "evaluation", "theme", "salles", "profs", "groupes"]
     if nom == "debut":
@@ -117,6 +130,15 @@ def recupere_champ_csv(evenement, nom):
         return event_l[csv_template.index(nom)]
 
 def selectionne_SAE105_groupe(calendrier, groupe):
+    '''
+
+    Args:
+        calendrier:
+        groupe:
+
+    Returns:
+
+    '''
     pass
 
 def est_dans_competence_S1(module, competence):
