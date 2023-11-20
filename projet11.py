@@ -4,7 +4,6 @@ Script: SAE105/projet11
 Création: chouitiy, le 14/11/2023
 """
 
-
 # Imports
 import tools_constantes
 import projet11
@@ -24,6 +23,7 @@ def calcule_nombre_minutes(heure):
     minutes = int(heure.split(":")[1])
     return heures * 60 + minutes
 
+
 def calcule_duree(heure_debut, heure_fin):
     '''
     Renvoi la durée d'un événement basé sur son heure de début et de fin; au format HH:MM
@@ -39,6 +39,7 @@ def calcule_duree(heure_debut, heure_fin):
     if minutes < 10:
         minutes = "0" + str(temps_en_minute % 60)
     return f'{heures}:{minutes}'
+
 
 def compare_heures(heure1, heure2):
     '''
@@ -56,6 +57,7 @@ def compare_heures(heure1, heure2):
         return 1
     else:
         return 0
+
 
 def compare_dates(date1, date2):
     '''
@@ -88,6 +90,7 @@ def compare_dates(date1, date2):
                 else:
                     return -1
 
+
 def est_date_dans_intervalle(date, debut, fin):
     '''
     Vérifie si une date est incluse dans une intervalle donnée.
@@ -107,6 +110,7 @@ def est_date_dans_intervalle(date, debut, fin):
         else:
             return False
 
+
 def recupere_champ_csv(evenement, nom):
     '''
     Renvoi le champ "nom" dans l'évènement spécifié.
@@ -119,7 +123,8 @@ def recupere_champ_csv(evenement, nom):
 
     '''
     event_l = evenement.split(";")
-    csv_template = ["uid", "date", "debut|fin", "modules", "modalite", "evaluation", "theme", "salles", "profs", "groupes"]
+    csv_template = ["uid", "date", "debut|fin", "modules", "modalite", "evaluation", "theme", "salles", "profs",
+                    "groupes"]
     if nom == "debut":
         return event_l[2].split("|")[0]
     elif nom == "fin":
@@ -129,30 +134,107 @@ def recupere_champ_csv(evenement, nom):
     else:
         return event_l[csv_template.index(nom)]
 
+
 def selectionne_SAE105_groupe(calendrier, groupe):
     '''
 
     Args:
-        calendrier:
-        groupe:
+        calendrier (str): Une liste d'évènements ADE
+        groupe (str): Un groupe de TD
 
     Returns:
+        (list of str): liste de ressource suivie par le groupe de TD
 
     '''
-    pass
+    event_list = []
+    for event in calendrier:
+        evenement = event.split(";")
+        ressource = evenement[3].split("-")[0]
+        group_event = evenement[-1]
+        if "SAÉ105" == ressource and groupe in group_event:
+            event_list.append(event)
+    return tools_sae.trie_evenements_par_date(event_list)
+
+def selectionne_ressources_groupe(calendrier, groupe):
+    '''
+
+    Args:
+        calendrier (str): Une liste d'évènements ADE
+        groupe (str): Un groupe de TD
+
+    Returns:
+        (list of str): liste de ressource suivie par le groupe de TD
+
+    '''
+    event_list = []
+    for event in calendrier:
+        evenement = event.split(";")
+        group_event = evenement[-1]
+        if groupe in group_event:
+            event_list.append(event)
+    return tools_sae.trie_evenements_par_date(event_list)
+
+
+def deduit_annee_du_module(module):
+    '''
+
+    Args:
+        module (str): Le module
+
+    Returns:
+        (int or None): L'année (1, 2 ou 3) auquel à lieu le module OU None
+
+    '''
+    if module == "Autre":
+        return None
+    elif "R" == module[0]:  # Forme "RXYY" ou "RXcyYY"
+        semestre = int(module[1])  # "explicit is better than implicit"
+        return (semestre + 1) // 2
+    else:  # Forme commençant par "SAÉ"
+        semestre = int(module[3])
+        return (semestre + 1) // 2
+
+def deduit_annee_du_groupe(groupe):
+    '''
+
+    Args:
+        groupe (str): Le groupe
+
+    Returns:
+        (int or None): L'année (1, 2 ou 3) auquel appartient le groupe
+
+    '''
+    return int(groupe[1])
 
 def est_dans_competence_S1(module, competence):
     '''
 
     Args:
-        module:
-        competence:
+        module (str): Un module (code & diminutif)
+        competence (str): Une compétence
 
     Returns:
+        fait_partie (bool): True si le module fait partie de la compétence, False sinon.
 
     '''
-    pass
+    fait_partie = False
+    if competence not in tools_constantes.COMPETENCES:
+        return fait_partie
+    elif "R" == module[0] and int(module[1]) != 1:  # Forme "RXYY" ou "RXcyYY"
+        return fait_partie
+    elif "S" == module[1] and int(module[3]) == 1:  # Forme commençant par "SAÉ"
+        return fait_partie
+    else:
+        num_competence = int(competence[2])
+        for ressource in tools_constantes.COEFFS_S1:
+            if module in ressource[0]:
+                if ressource[num_competence] != 0:
+                    fait_partie = True
 
+        return fait_partie
+
+def selectionne_creneaux_groupe_competence(calendrier, groupe, competence):
+    pass
 
 # Programme principal
 def main():
@@ -165,14 +247,18 @@ def main():
     event2_l = evenement2.split("-")
     jours = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"]
 
-    print(f'\tJour de {evenement1} : {jours[tools_date.get_numero_jour_semaine(int(event1_l[0]), int(event1_l[1]), int(event1_l[2]))]}')
-    print(f'\tJour de {evenement2} : {jours[tools_date.get_numero_jour_semaine(int(event2_l[0]), int(event2_l[1]), int(event2_l[2]))]}')
+    print(
+        f'\tJour de {evenement1} : {jours[tools_date.get_numero_jour_semaine(int(event1_l[0]), int(event1_l[1]), int(event1_l[2]))]}')
+    print(
+        f'\tJour de {evenement2} : {jours[tools_date.get_numero_jour_semaine(int(event2_l[0]), int(event2_l[1]), int(event2_l[2]))]}')
 
     event1_demain = tools_date.lendemain(evenement1).split("-")
     event2_demain = tools_date.lendemain(evenement2).split("-")
 
-    print(f'\tLendemain de {evenement1} : {jours[tools_date.get_numero_jour_semaine(int(event1_demain[0]), int(event1_demain[1]), int(event1_demain[2]))]}')
-    print(f'\tLendemain de {evenement2} : {jours[tools_date.get_numero_jour_semaine(int(event2_demain[0]), int(event2_demain[1]), int(event2_demain[2]))]}')
+    print(
+        f'\tLendemain de {evenement1} : {jours[tools_date.get_numero_jour_semaine(int(event1_demain[0]), int(event1_demain[1]), int(event1_demain[2]))]}')
+    print(
+        f'\tLendemain de {evenement2} : {jours[tools_date.get_numero_jour_semaine(int(event2_demain[0]), int(event2_demain[1]), int(event2_demain[2]))]}')
 
     print(est_date_dans_intervalle("15-12-2020", "01-01-2021", "31-01-2021"))
     print(compare_dates(evenement1, evenement2))
@@ -183,8 +269,13 @@ def main():
     print(evenement.split(";"))
     print(recupere_champ_csv(evenement, "fin"))
 
-    print(tools_sae.lecture_fichier_evenements("data/calendrier.csv"))
+    calendrier = tools_sae.lecture_fichier_evenements("data/calendrier.csv")
+    print('\n')
 
+    print(selectionne_SAE105_groupe(calendrier, 'B1G4'))
+    print('\n')
+
+    print(f'Compétences : {tools_constantes.COMPETENCES}\nCoeffs : {tools_constantes.COEFFS_S1}')
 
 
 if __name__ == '__main__':
