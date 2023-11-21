@@ -14,23 +14,23 @@ import tools_sae
 # Fonctions
 
 def calcule_nombre_minutes(heure):
-    '''
+    """
     Converti un temps donné en heure et minutes, en minutes.
         :param heure (str): Heure au format "HH:MM"
         :return (str): Nombre de minutes
-    '''
+    """
     heures = int(heure.split(":")[0])
     minutes = int(heure.split(":")[1])
     return heures * 60 + minutes
 
 
 def calcule_duree(heure_debut, heure_fin):
-    '''
+    """
     Renvoi la durée d'un événement basé sur son heure de début et de fin; au format HH:MM
         :param heure_debut (str): l'heure de début au format "HH:MM"
         :param heure_fin (str): l'heure de fin au format "HH:MM"
         :return (str):  la durée au format "HH:MM"
-    '''
+    """
     temps_en_minute = calcule_nombre_minutes(heure_fin) - calcule_nombre_minutes(heure_debut)
     heures = temps_en_minute // 60
     minutes = temps_en_minute % 60
@@ -42,12 +42,12 @@ def calcule_duree(heure_debut, heure_fin):
 
 
 def compare_heures(heure1, heure2):
-    '''
+    """
     Renvoi 1, 0, ou 1 si heure1 est après, avant ou pareil que heure2.
         :param heure1 (str): la première heure
         :param heure2 (str): la seconde heure
         :return (int): Résultat de comparaison
-    '''
+    """
     heure1_minute = calcule_nombre_minutes(heure1)
     heure2_minute = calcule_nombre_minutes(heure2)
 
@@ -60,7 +60,7 @@ def compare_heures(heure1, heure2):
 
 
 def compare_dates(date1, date2):
-    '''
+    """
     Vérifie si date1 est après, avant ou pareil que date2
         Args:
             date1 (str) : la première date
@@ -69,7 +69,7 @@ def compare_dates(date1, date2):
         Returns:
             (int) : Renvoi 1, -1 ou 0 selon si date1 est après, avant ou pareil que date2
 
-    '''
+    """
     if date1 == date2:
         return 0
     else:
@@ -92,7 +92,7 @@ def compare_dates(date1, date2):
 
 
 def est_date_dans_intervalle(date, debut, fin):
-    '''
+    """
     Vérifie si une date est incluse dans une intervalle donnée.
         Args:
             date (str): la date à vérifier
@@ -101,7 +101,7 @@ def est_date_dans_intervalle(date, debut, fin):
 
         Returns:
             (bool): Si la date est dans l'intervalle
-    '''
+    """
     if date == debut or date == fin:
         return True
     else:
@@ -112,7 +112,7 @@ def est_date_dans_intervalle(date, debut, fin):
 
 
 def recupere_champ_csv(evenement, nom):
-    '''
+    """
     Renvoi le champ "nom" dans l'évènement spécifié.
         Args:
             evenement (str): évènement au format csv
@@ -121,7 +121,7 @@ def recupere_champ_csv(evenement, nom):
         Returns:
                 (str): le champ associé à l'évènement
 
-    '''
+    """
     event_l = evenement.split(";")
     csv_template = ["uid", "date", "debut|fin", "modules", "modalite", "evaluation", "theme", "salles", "profs",
                     "groupes"]
@@ -136,7 +136,7 @@ def recupere_champ_csv(evenement, nom):
 
 
 def selectionne_SAE105_groupe(calendrier, groupe):
-    '''
+    """
 
     Args:
         calendrier (str): Une liste d'évènements ADE
@@ -145,7 +145,7 @@ def selectionne_SAE105_groupe(calendrier, groupe):
     Returns:
         (list of str): liste de ressource suivie par le groupe de TD
 
-    '''
+    """
     event_list = []
     for event in calendrier:
         evenement = event.split(";")
@@ -155,8 +155,9 @@ def selectionne_SAE105_groupe(calendrier, groupe):
             event_list.append(event)
     return tools_sae.trie_evenements_par_date(event_list)
 
+
 def selectionne_ressources_groupe(calendrier, groupe):
-    '''
+    """
 
     Args:
         calendrier (str): Une liste d'évènements ADE
@@ -165,7 +166,7 @@ def selectionne_ressources_groupe(calendrier, groupe):
     Returns:
         (list of str): liste de ressource suivie par le groupe de TD
 
-    '''
+    """
     event_list = []
     for event in calendrier:
         evenement = event.split(";")
@@ -176,7 +177,7 @@ def selectionne_ressources_groupe(calendrier, groupe):
 
 
 def deduit_annee_du_module(module):
-    '''
+    """
 
     Args:
         module (str): Le module
@@ -184,7 +185,7 @@ def deduit_annee_du_module(module):
     Returns:
         (int or None): L'année (1, 2 ou 3) auquel à lieu le module OU None
 
-    '''
+    """
     if module == "Autre":
         return None
     elif "R" == module[0]:  # Forme "RXYY" ou "RXcyYY"
@@ -194,8 +195,9 @@ def deduit_annee_du_module(module):
         semestre = int(module[3])
         return (semestre + 1) // 2
 
+
 def deduit_annee_du_groupe(groupe):
-    '''
+    """
 
     Args:
         groupe (str): Le groupe
@@ -203,11 +205,12 @@ def deduit_annee_du_groupe(groupe):
     Returns:
         (int or None): L'année (1, 2 ou 3) auquel appartient le groupe
 
-    '''
+    """
     return int(groupe[1])
 
+
 def est_dans_competence_S1(module, competence):
-    '''
+    """
 
     Args:
         module (str): Un module (code & diminutif)
@@ -216,7 +219,7 @@ def est_dans_competence_S1(module, competence):
     Returns:
         fait_partie (bool): True si le module fait partie de la compétence, False sinon.
 
-    '''
+    """
     fait_partie = False
     if competence not in tools_constantes.COMPETENCES:
         return fait_partie
@@ -233,8 +236,28 @@ def est_dans_competence_S1(module, competence):
 
         return fait_partie
 
+
 def selectionne_creneaux_groupe_competence(calendrier, groupe, competence):
-    pass
+    """
+
+    Args:
+        calendrier:
+        groupe:
+        competence:
+
+    Returns:
+
+    """
+    event_list = []
+    for event in calendrier:
+        event_group = recupere_champ_csv(event, "groupes").split("|")
+        if groupe in event_group:
+            module = recupere_champ_csv(event, "modules").split("-")[0]
+            if est_dans_competence_S1(module, competence):
+                event_list.append(event)
+    return tools_sae.trie_evenements_par_date(event_list)
+
+
 
 # Programme principal
 def main():
