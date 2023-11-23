@@ -156,13 +156,15 @@ class TestCompareDates:
             tools_tests.affiche_message_erreur("La valeur de retour doit être de type int")
 
     @pytest.mark.parametrize("date1, date2, attendu", [
-        pytest.param("01-01-2021", "01-01-2021", 0),
         pytest.param("01-01-2021", "01-01-2022", -1),
+        pytest.param("05-11-2023", "04-01-2023", 1),
         pytest.param("01-01-2022", "01-01-2021", 1),
         pytest.param("01-01-2021", "01-02-2021", -1),
         pytest.param("01-02-2021", "01-01-2021", 1),
         pytest.param("01-01-2021", "10-01-2021", -1),
         pytest.param("10-01-2021", "01-01-2021", 1),
+        pytest.param("01-01-2021", "01-01-2021", 0),
+        pytest.param("05-11-2023", "05-11-2023", 0),
     ])
     def test_valeur_retour(self, date1, date2, attendu):
         resultat = projet.compare_dates(date1, date2)
@@ -251,7 +253,7 @@ class TestEstDateDansIntervalle:
             mocked.assert_called()
 
 
-@pytest.mark.echeance2
+@pytest.mark.echeance3
 class TestRecupereChampCsv:
     FONCTION = "recupere_champ_csv"
 
@@ -366,7 +368,7 @@ La valeur de retour doit être triée par ordre de ressources
         assert res == attendu, tools_tests.affiche_message_erreur(message)
 
 
-@pytest.mark.echeance5
+@pytest.mark.echeance6
 class TestExportMarkdown:
     FONCTION = "export_markdown"
 
@@ -386,7 +388,7 @@ class TestExportMarkdown:
             tools_tests.affiche_message_erreur(message)
 
 
-@pytest.mark.echeance6
+@pytest.mark.echeance7
 class TestExportPng:
     FONCTION = "export_png"
 

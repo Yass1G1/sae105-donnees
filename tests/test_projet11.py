@@ -57,7 +57,6 @@ La valeur de retour n'est pas correcte"""
         assert resultat == attendu, tools_tests.affiche_message_erreur(message)
 
 
-
 @pytest.mark.echeance4
 class TestSelectionneCreneauxGroupeCompetence:
     FONCTION = "selectionne_creneaux_groupe_competence"
@@ -107,7 +106,6 @@ La valeur de retour n'est pas correcte"""
         assert resultat == attendu, tools_tests.affiche_message_erreur(message)
 
 
-
 @pytest.mark.echeance5
 class TestNbHeuresParModalite:
     FONCTION = "nb_heures_par_modalite"
@@ -153,8 +151,8 @@ La valeur de retour n'est pas correcte"""
 
 
 @pytest.mark.echeance5
-class repartition_moyenne_volume_horaire_competence:
-    FONCTION = "nb_heures_par_modalite"
+class TestRepartitionMoyenneVolumeHoraireCompetence:
+    FONCTION = "repartition_moyenne_volume_horaire_competence"
 
     # ---
     def test_declaration_fonction(self):
@@ -172,21 +170,17 @@ class repartition_moyenne_volume_horaire_competence:
                                                                      1)
         fct = tools_introspection.get_fonction_from_module(self.FONCTION,
                                                            projet11)
-        assert len(inspect.signature(fct).parameters) == 1, \
+        assert len(inspect.signature(fct).parameters) == 2, \
             tools_tests.affiche_message_erreur(message)
 
     # Tests du type de la valeur de retour
     def test_type_valeur_retour(self, datadir):
         fichier_events = datadir[f"extrait_ade1.csv"]
         events = tools_tests.lecture_lignes_fichier_csv(fichier_events)
-        res = projet11.nb_heures_par_modalite(events)
+        res = projet11.repartition_moyenne_volume_horaire_competence(events, "RT1-Administrer")
         message = f"""Paramètre testé: cf {fichier_events}
-    La valeur de retour doit être de type list"""
-        assert isinstance(res, list), tools_tests.affiche_message_erreur(
-            message)
-        message = f"""Paramètre testé: cf {fichier_events}
-    La valeur de retour doit être une liste de str"""
-        assert isinstance(res[0], str), tools_tests.affiche_message_erreur(message)
+    La valeur de retour doit être une chaine de caractères de str"""
+        assert isinstance(res, str), tools_tests.affiche_message_erreur(message)
 
     @pytest.mark.parametrize("data,competence,attendu", [
         pytest.param("extrait_ade1.csv", "RT1-Administrer", "RT1-Administrer;0.00;1.50;0.50;0.00;2.00",

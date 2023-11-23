@@ -5,10 +5,9 @@ Création: chouitiy, le 14/11/2023
 """
 
 # Imports
-import tools_constantes
-import projet11
-import tools_date
-import tools_sae
+from tools import tools_constantes
+from tools import tools_date
+from tools import tools_sae
 
 
 # Fonctions
@@ -21,6 +20,7 @@ def calcule_nombre_minutes(heure):
     """
     heures = int(heure.split(":")[0])
     minutes = int(heure.split(":")[1])
+
     return heures * 60 + minutes
 
 
@@ -38,6 +38,7 @@ def calcule_duree(heure_debut, heure_fin):
         heures = "0" + str(temps_en_minute // 60)
     if minutes < 10:
         minutes = "0" + str(temps_en_minute % 60)
+
     return f'{heures}:{minutes}'
 
 
@@ -73,22 +74,12 @@ def compare_dates(date1, date2):
     if date1 == date2:
         return 0
     else:
-        date1_l = date1.split("-")
-        date2_l = date2.split("-")
-        if date1_l[2] > date2_l[2]:  # Compare les années
+        date1 = date1.split("-")
+        date2 = date2.split("-")
+        if date1[::-1] > date2[::-1]:  # comparer l'année > mois > jours
             return 1
-        elif date1_l[2] < date2_l[2]:
-            return -1
         else:
-            if date1_l[1] > date2_l[1]:  # Compare les mois
-                return 1
-            elif date1_l[1] < date2_l[1]:
-                return -1
-            else:
-                if date1_l[0] > date2_l[0]:  # Compare les jours
-                    return 1
-                else:
-                    return -1
+            return -1
 
 
 def est_date_dans_intervalle(date, debut, fin):
@@ -143,16 +134,17 @@ def selectionne_SAE105_groupe(calendrier, groupe):
         groupe (str): Un groupe de TD
 
     Returns:
-        (list of str): liste de ressource suivie par le groupe de TD
+        (list of str): liste de cours de SAE105 suivie par le groupe de TD
 
     """
     event_list = []
     for event in calendrier:
         evenement = event.split(";")
-        ressource = evenement[3].split("-")[0]
+        ressource = evenement[3].split("-")[0]  # [3] = champ ressource
         group_event = evenement[-1]
         if "SAÉ105" == ressource and groupe in group_event:
             event_list.append(event)
+
     return tools_sae.trie_evenements_par_date(event_list)
 
 
@@ -173,6 +165,7 @@ def selectionne_ressources_groupe(calendrier, groupe):
         group_event = evenement[-1]
         if groupe in group_event:
             event_list.append(event)
+
     return tools_sae.trie_evenements_par_date(event_list)
 
 
@@ -258,47 +251,79 @@ def selectionne_creneaux_groupe_competence(calendrier, groupe, competence):
     return tools_sae.trie_evenements_par_date(event_list)
 
 
+def exemple_export_markdown():
+    entetes = ["Code", "Diminutif", "Discipline"]
+    donnees = ["R102;ArchiRes;Réseaux", "R204;Téléphonie;Télécoms", "R107;Python1;Info"]
+    donnees_split = [x.split(";") for x in donnees]
+    col_size = [len(x)+1 for x in entetes] # définit la largeur de chaque colonne
+
+    # Vérifie que les données ne sont pas "plus large" que la colonne
+    for size in range(len(col_size)):
+        for data in range(len(donnees_split)):
+            if col_size[size] < len(donnees_split[data][size])+1:
+                col_size[size] = len(donnees_split[data][size])+1
+
+    # Ligne d'entête (en comblant la largeur avec des espaces)
+    print("|", end="")
+    for i in range(len(entetes)):
+        print(f' {entetes[i]}{(col_size[i] - len(entetes[i]))*" "}|', end="")
+
+    # Ligne du séparateur (selon la largeur) + 2
+    print("\n|", end="")
+    for j in range(len(entetes)):
+        print(f':{"-"*col_size[j]}|', end="")
+
+    # Lignes des données (en alignant les colonnes en comblant avec des espaces)
+    for k in range(len(donnees)):
+        print("\n|", end="")
+        for champ in range(len(donnees)):
+            print(f' {donnees_split[k][champ]}{(col_size[champ] - len(donnees_split[k][champ]) - 1)*" "} |', end="")
+
+
 
 # Programme principal
 def main():
-    heure = "11:00"
-    print(calcule_nombre_minutes(heure))
-
-    evenement1 = "31-10-2021"
-    evenement2 = "17-01-2022"
-    event1_l = evenement1.split("-")
-    event2_l = evenement2.split("-")
-    jours = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"]
-
-    print(
-        f'\tJour de {evenement1} : {jours[tools_date.get_numero_jour_semaine(int(event1_l[0]), int(event1_l[1]), int(event1_l[2]))]}')
-    print(
-        f'\tJour de {evenement2} : {jours[tools_date.get_numero_jour_semaine(int(event2_l[0]), int(event2_l[1]), int(event2_l[2]))]}')
-
-    event1_demain = tools_date.lendemain(evenement1).split("-")
-    event2_demain = tools_date.lendemain(evenement2).split("-")
-
-    print(
-        f'\tLendemain de {evenement1} : {jours[tools_date.get_numero_jour_semaine(int(event1_demain[0]), int(event1_demain[1]), int(event1_demain[2]))]}')
-    print(
-        f'\tLendemain de {evenement2} : {jours[tools_date.get_numero_jour_semaine(int(event2_demain[0]), int(event2_demain[1]), int(event2_demain[2]))]}')
-
-    print(est_date_dans_intervalle("15-12-2020", "01-01-2021", "31-01-2021"))
-    print(compare_dates(evenement1, evenement2))
-
-    print(tools_date.nombre_jours(evenement1, evenement2))
-
-    evenement = "ADE0000988;05-09-2023;08:00|12:00;R3cy16-Pentesting;TP;;;IUT1_T33 res1;LUBINEAU DENIS|VEDEL FRANCK;B2GA"
-    print(evenement.split(";"))
-    print(recupere_champ_csv(evenement, "fin"))
-
-    calendrier = tools_sae.lecture_fichier_evenements("data/calendrier.csv")
-    print('\n')
-
-    print(selectionne_SAE105_groupe(calendrier, 'B1G4'))
-    print('\n')
-
-    print(f'Compétences : {tools_constantes.COMPETENCES}\nCoeffs : {tools_constantes.COEFFS_S1}')
+    # heure = "11:00"
+    # print(calcule_nombre_minutes(heure))
+    #
+    # evenement1 = "31-10-2021"
+    # evenement2 = "17-01-2022"
+    # event1_l = evenement1.split("-")
+    # event2_l = evenement2.split("-")
+    # jours = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"]
+    #
+    # print(
+    #     f'\tJour de {evenement1} : {jours[tools_date.get_numero_jour_semaine(int(event1_l[0]), int(event1_l[1]), int(event1_l[2]))]}')
+    # print(
+    #     f'\tJour de {evenement2} : {jours[tools_date.get_numero_jour_semaine(int(event2_l[0]), int(event2_l[1]), int(event2_l[2]))]}')
+    #
+    # event1_demain = tools_date.lendemain(evenement1).split("-")
+    # event2_demain = tools_date.lendemain(evenement2).split("-")
+    #
+    # print(
+    #     f'\tLendemain de {evenement1} : {jours[tools_date.get_numero_jour_semaine(int(event1_demain[0]), int(event1_demain[1]), int(event1_demain[2]))]}')
+    # print(
+    #     f'\tLendemain de {evenement2} : {jours[tools_date.get_numero_jour_semaine(int(event2_demain[0]), int(event2_demain[1]), int(event2_demain[2]))]}')
+    #
+    # print(est_date_dans_intervalle("15-12-2020", "01-01-2021", "31-01-2021"))
+    # print(compare_dates(evenement1, evenement2))
+    #
+    # print(tools_date.nombre_jours(evenement1, evenement2))
+    #
+    # evenement = "ADE0000988;05-09-2023;08:00|12:00;R3cy16-Pentesting;TP;;;IUT1_T33 res1;LUBINEAU DENIS|VEDEL FRANCK;B2GA"
+    # print(evenement.split(";"))
+    # print(recupere_champ_csv(evenement, "fin"))
+    #
+    # calendrier = tools_sae.lecture_fichier_evenements("data/calendrier.csv")
+    # print('\n')
+    #
+    # print(selectionne_SAE105_groupe(calendrier, 'B1G4'))
+    # print('\n')
+    #
+    # print(f'Compétences : {tools_constantes.COMPETENCES}\nCoeffs : {tools_constantes.COEFFS_S1}')
+    #
+    # print("\n")
+    exemple_export_markdown()
 
 
 if __name__ == '__main__':
