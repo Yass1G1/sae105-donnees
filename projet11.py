@@ -5,10 +5,14 @@ Création: chouitiy, le 14/11/2023
 """
 
 # Imports
-from tools import tools_constantes
-from tools import tools_date
-from tools import tools_sae
-
+from tools import *
+import sys
+try:
+    import tools_sae
+    import tools_constantes
+    import tools_date
+except:
+    pass
 
 # Fonctions
 
@@ -323,6 +327,8 @@ def main():
     # print(f'Compétences : {tools_constantes.COMPETENCES}\nCoeffs : {tools_constantes.COEFFS_S1}')
     #
     # print("\n")
+    
+    sys.stdout = open("README.md", "w")
     exemple_export_markdown()
 
 
