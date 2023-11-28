@@ -5,13 +5,13 @@ Création: chouitiy, le 14/11/2023
 """
 
 # Imports
-from tools import *
+# from tools import *
 import sys
 try:
-    import tools_sae
-    import tools_constantes
-    import tools_date
-except:
+    import tools.tools_sae
+    import tools.tools_constantes
+    import tools.tools_date
+except ModuleNotFoundError:
     pass
 
 # Fonctions
@@ -73,7 +73,6 @@ def compare_dates(date1, date2):
 
         Returns:
             (int) : Renvoi 1, -1 ou 0 selon si date1 est après, avant ou pareil que date2
-
     """
     if date1 == date2:
         return 0
@@ -115,12 +114,13 @@ def recupere_champ_csv(evenement, nom):
 
         Returns:
                 (str): le champ associé à l'évènement
-
     """
     event_l = evenement.split(";")
     csv_template = ["uid", "date", "debut|fin", "modules", "modalite", "evaluation", "theme", "salles", "profs",
                     "groupes"]
-    if nom == "debut":
+    if nom == "heure":
+        return event_l[2]
+    elif nom == "debut":
         return event_l[2].split("|")[0]
     elif nom == "fin":
         return event_l[2].split("|")[1]
@@ -132,14 +132,12 @@ def recupere_champ_csv(evenement, nom):
 
 def selectionne_SAE105_groupe(calendrier, groupe):
     """
-
     Args:
         calendrier (str): Une liste d'évènements ADE
         groupe (str): Un groupe de TD
 
     Returns:
         (list of str): liste de cours de SAE105 suivie par le groupe de TD
-
     """
     event_list = []
     for event in calendrier:
@@ -154,14 +152,12 @@ def selectionne_SAE105_groupe(calendrier, groupe):
 
 def selectionne_ressources_groupe(calendrier, groupe):
     """
-
     Args:
         calendrier (str): Une liste d'évènements ADE
         groupe (str): Un groupe de TD
 
     Returns:
         (list of str): liste de ressource suivie par le groupe de TD
-
     """
     event_list = []
     for event in calendrier:
@@ -175,13 +171,11 @@ def selectionne_ressources_groupe(calendrier, groupe):
 
 def deduit_annee_du_module(module):
     """
-
     Args:
         module (str): Le module
 
     Returns:
         (int or None): L'année (1, 2 ou 3) auquel à lieu le module OU None
-
     """
     if module == "Autre":
         return None
@@ -195,27 +189,23 @@ def deduit_annee_du_module(module):
 
 def deduit_annee_du_groupe(groupe):
     """
-
     Args:
         groupe (str): Le groupe
 
     Returns:
         (int or None): L'année (1, 2 ou 3) auquel appartient le groupe
-
     """
     return int(groupe[1])
 
 
 def est_dans_competence_S1(module, competence):
     """
-
     Args:
         module (str): Un module (code & diminutif)
         competence (str): Une compétence
 
     Returns:
         fait_partie (bool): True si le module fait partie de la compétence, False sinon.
-
     """
     fait_partie = False
     if competence not in tools_constantes.COMPETENCES:
@@ -236,14 +226,12 @@ def est_dans_competence_S1(module, competence):
 
 def selectionne_creneaux_groupe_competence(calendrier, groupe, competence):
     """
-
     Args:
         calendrier:
         groupe:
         competence:
 
     Returns:
-
     """
     event_list = []
     for event in calendrier:
@@ -283,6 +271,21 @@ def exemple_export_markdown():
         for champ in range(len(donnees)):
             print(f' {donnees_split[k][champ]}{(col_size[champ] - len(donnees_split[k][champ]) - 1)*" "} |', end="")
 
+    print("")
+
+
+def nb_heures_par_modalite(calendrier):
+    heures = [0, 0, 0, 0, 0]
+    for event in calendrier:
+        modalite = recupere_champ_csv(event, "modalite")
+        h_debut = recupere_champ_csv(event, "debut")
+        h_fin = recupere_champ_csv(event, "fin")
+        duree = calcule_nombre_minutes(calcule_duree(h_debut, h_fin))
+        heures[tools.tools_constantes.MODALITES.index(modalite)] += duree
+        heures[-1] += duree
+
+    return [(x / 60) for x in heures]
+
 
 
 # Programme principal
@@ -318,7 +321,7 @@ def main():
     # print(evenement.split(";"))
     # print(recupere_champ_csv(evenement, "fin"))
     #
-    # calendrier = tools_sae.lecture_fichier_evenements("data/calendrier.csv")
+    calendrier = tools.tools_sae.lecture_fichier_evenements("data/all.csv")
     # print('\n')
     #
     # print(selectionne_SAE105_groupe(calendrier, 'B1G4'))
@@ -328,8 +331,10 @@ def main():
     #
     # print("\n")
     
-    sys.stdout = open("README.md", "w")
-    exemple_export_markdown()
+    # sys.stdout = open("README.md", "w") # Uncomment to get output in a file WINDOWS
+    # exemple_export_markdown()
+    # print(tools.tools_constantes.MODALITES)
+    print(nb_heures_par_modalite(calendrier))
 
 
 if __name__ == '__main__':
