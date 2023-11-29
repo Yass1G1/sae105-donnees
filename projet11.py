@@ -287,6 +287,13 @@ def nb_heures_par_modalite(calendrier):
     return [(x / 60) for x in heures]
 
 
+def repartition_moyenne_volume_horaire_competence(calendrier, competence):
+    repartition = [0, 0, 0, 0]  # 1 pour chaque groupe
+    for i in range(4):
+        for event in calendrier:
+            pass
+    pass
+
 
 # Programme principal
 def main():
@@ -335,6 +342,7 @@ def main():
     # exemple_export_markdown()
     # print(tools.tools_constantes.MODALITES)
     print(nb_heures_par_modalite(calendrier))
+    print(tools.tools_constantes.COMPETENCES)
 
 
 if __name__ == '__main__':
