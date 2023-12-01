@@ -7,6 +7,9 @@ Création: chouitiy, le 14/11/2023
 # Imports
 # from tools import *
 import sys
+
+import tools_constantes
+
 try:
     import tools.tools_sae
     import tools.tools_constantes
@@ -288,11 +291,21 @@ def nb_heures_par_modalite(calendrier):
 
 
 def repartition_moyenne_volume_horaire_competence(calendrier, competence):
-    repartition = [0, 0, 0, 0]  # 1 pour chaque groupe
-    for i in range(4):
+    repartition = [0, 0, 0, 0, 0]  # 1 pour chaque groupe
+    for i in range(1):
         for event in calendrier:
-            pass
-    pass
+            evenement = event.split(";")
+            module = evenement[3].split("-")[0]
+            if est_dans_competence_S1(module, competence):
+                modalite = evenement[4]
+                duree = calcule_duree(recupere_champ_csv(event, "debut"), recupere_champ_csv(event, "fin"))
+                repartition[tools_constantes.MODALITES.index(modalite)] += calcule_nombre_minutes(duree)  # Tps modalité
+                repartition[-1] += calcule_nombre_minutes(duree)  # Tps total
+
+    for j in range(len(repartition)):
+        repartition[j] = round(((repartition[j] / 60) / 4), 2)
+
+    return f'{competence};{repartition[0]};{repartition[1]};{repartition[2]};{repartition[3]};{repartition[4]}'
 
 
 # Programme principal
@@ -343,6 +356,7 @@ def main():
     # print(tools.tools_constantes.MODALITES)
     print(nb_heures_par_modalite(calendrier))
     print(tools.tools_constantes.COMPETENCES)
+    print(tools.tools_constantes.MODALITES)
 
 
 if __name__ == '__main__':
