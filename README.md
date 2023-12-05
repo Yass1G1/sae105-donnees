@@ -1,5 +1,5 @@
-| Code | Diminutif  | Discipline |
-|:-----|:-----------|:-----------|
-| R102 | ArchiRes   | Réseaux    |
-| R204 | Téléphonie | Télécoms   |
-| R107 | Python1    | Info       |
+| COMPETENCE      | CM   | TD     | TP     | Proj  | TOTAL  |
+|:----------------|:-----|:-------|:-------|:------|:-------|
+| RT1-Administrer | 6.75 | 143.50 | 119.50 | 19.00 | 288.75 |
+| RT2-Connecter   | 7.75 | 148.00 | 116.00 | 33.00 | 304.75 |
+| RT3-Programmer  | 8.00 | 135.50 | 115.00 | 25.00 | 283.50 |

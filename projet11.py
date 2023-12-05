@@ -290,32 +290,92 @@ def nb_heures_par_modalite(calendrier):
 
     return [(x / 60) for x in heures]
 
-
 def repartition_moyenne_volume_horaire_competence(calendrier, competence):
     """
 
     Args:
-        calendrier (list of str): liste d'événement au format csv
-        competence (str): une compétence parmi : RT1-Administrer, RT2-Connecter et RT3-Programmer
+        calendrier: Liste d'événement
+        competence: Une compétence parmi 'RT1-Administrer', 'RT2-Connecter', 'RT3-Programmer'
 
     Returns:
-        (list of int): liste des différents volumes horaires
-
+        (str): repartition moyenne du volume horaires des cours de la compétence
     """
-    repartition = [0, 0, 0, 0, 0]  # 1 pour chaque modalité
-    for event in calendrier:  # pour chaque evenement
-        evenement = event.split(";")  # On split l'événement
-        module = evenement[3].split("-")[0]  # on save la matière (SAEXXX, RXXX)
-        if est_dans_competence_S1(module, competence):  # on vérifie si le la compétence est dans le S1
-            modalite = evenement[4]  # Indique le type de cours
-            duree_h = calcule_duree(recupere_champ_csv(event, "debut"), recupere_champ_csv(event, "fin"))
-            repartition[tools_constantes.MODALITES.index(modalite)] += (calcule_nombre_minutes(duree_h) * len(evenement[-1].split("|")))  # Tps modalité
-            repartition[-1] += (calcule_nombre_minutes(duree_h) * len(evenement[-1].split("|")))  # Tps total
 
-    for j in range(len(repartition)):
-        repartition[j] = format(((repartition[j] / 60) / 4), '.2f')
+    all_groups = [[0, 0, 0, 0, 0] for x in range(4)]
+    for i in range(4):
+        groupe = "B1G" + str(i+1)
+        for event in calendrier:
+            module = recupere_champ_csv(event, "modules")
+            if est_dans_competence_S1(module, competence) and groupe in recupere_champ_csv(event, "groupes"):
 
-    return f'{competence};{repartition[0]};{repartition[1]};{repartition[2]};{repartition[3]};{repartition[4]}'
+                # Durée en minute
+                debut = recupere_champ_csv(event, "debut")
+                fin = recupere_champ_csv(event, "fin")
+                duree_heure = calcule_duree(debut, fin)
+                duree_minute = calcule_nombre_minutes(duree_heure)
+
+                # Modalite
+                modalite = recupere_champ_csv(event, "modalite")
+                index_modalite = tools_constantes.MODALITES.index(modalite)
+
+                # Ajout aux listes
+                all_groups[i][index_modalite] += duree_minute
+                all_groups[i][-1] += duree_minute
+
+    # Rassemblement des valeurs
+    all_groups_average = [0, 0, 0, 0, 0]
+    for groupe in all_groups:
+        for j in range(5):
+            all_groups_average[j] += groupe[j]
+
+    # Moyenne des valeurs
+    for k in range(len(all_groups_average)):
+        all_groups_average[k] = (all_groups_average[k] / 60) / 4
+        all_groups_average[k] = format(all_groups_average[k], '.2f')
+
+    return f'{competence};{all_groups_average[0]};{all_groups_average[1]};{all_groups_average[2]};{all_groups_average[3]};{all_groups_average[4]}'
+
+
+def traitement(calendrier):
+    """
+
+    Args:
+        calendrier: Liste d'événement
+
+    Returns:
+        (list of str): Liste du rapport de volume horaire par compétence
+    """
+    return [repartition_moyenne_volume_horaire_competence(calendrier, tools_constantes.COMPETENCES[x]) for x in range(3)]
+
+
+def export_markdown(resultats, entetes):
+    donnees_split = [x.split(";") for x in resultats]
+    col_size = [len(x) + 1 for x in entetes]  # définit la largeur de chaque colonne
+
+    # Vérifie que les données ne sont pas "plus large" que la colonne
+    for size in range(len(col_size)):
+        for data in range(len(donnees_split)):
+            if col_size[size] < len(donnees_split[data][size]) + 1:
+                col_size[size] = len(donnees_split[data][size]) + 1
+
+    # Ligne d'entête (en comblant la largeur avec des espaces)
+    print("|", end="")
+    for i in range(len(entetes)):
+        print(f' {entetes[i]}{(col_size[i] - len(entetes[i])) * " "}|', end="")
+
+    # Ligne du séparateur (selon la largeur) + 2
+    print("\n|", end="")
+    for j in range(len(entetes)):
+        print(f':{"-" * col_size[j]}|', end="")
+
+    # Lignes des données (en alignant les colonnes en comblant avec des espaces)
+    for k in range(len(resultats)):
+        print("\n|", end="")
+        for champ in range(len(entetes)):
+            print(f' {donnees_split[k][champ]}{(col_size[champ] - len(donnees_split[k][champ]) - 1) * " "} |', end="")
+
+    print("")
+
 
 
 # Programme principal
@@ -364,13 +424,18 @@ def main():
     # sys.stdout = open("README.md", "w") # Uncomment to get output in a file WINDOWS
     # exemple_export_markdown()
     # print(tools.tools_constantes.MODALITES)
-    print(nb_heures_par_modalite(calendrier))
-    print(tools_constantes.COMPETENCES)
-    print(tools_constantes.MODALITES)
+    print(f'Nombre heure par modalité : {nb_heures_par_modalite(calendrier)}')
+    # print(tools_constantes.COMPETENCES)
+    # print(tools_constantes.MODALITES)
 
     print(repartition_moyenne_volume_horaire_competence(calendrier, 'RT1-Administrer'))
+    resultat_traitement = traitement(calendrier)
+    print(f'Traitement() : {resultat_traitement}\n')
 
-    print(tools_constantes.COEFFS_S1)
+    sys.stdout = open("README.md", "w")  # Uncomment to get output in a file WINDOWS
+    export_markdown(resultat_traitement, ["COMPETENCE", "CM", "TD", "TP", "Proj", "TOTAL"])
+
+    # print(tools_constantes.COEFFS_S1)
 
 
 if __name__ == '__main__':
