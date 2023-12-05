@@ -433,7 +433,7 @@ def main():
     resultat_traitement = traitement(calendrier)
     print(f'Traitement() : {resultat_traitement}\n')
 
-    sys.stdout = open("README.md", "w")  # Uncomment to get output in a file WINDOWS
+    # sys.stdout = open("README.md", "w")  # Uncomment to get output in a file WINDOWS
     export_markdown(resultat_traitement, ["COMPETENCE", "CM", "TD", "TP", "Proj", "TOTAL"])
 
     # print(tools_constantes.COEFFS_S1)
