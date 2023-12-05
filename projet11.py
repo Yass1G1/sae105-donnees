@@ -8,14 +8,15 @@ Création: chouitiy, le 14/11/2023
 # from tools import *
 import sys
 
-import tools_constantes
-
 try:
+    import tools_constantes
+    import tools_sae
+    import tools_date
+except ModuleNotFoundError:
     import tools.tools_sae
     import tools.tools_constantes
     import tools.tools_date
-except ModuleNotFoundError:
-    pass
+
 
 # Fonctions
 
@@ -215,7 +216,7 @@ def est_dans_competence_S1(module, competence):
         return fait_partie
     elif "R" == module[0] and int(module[1]) != 1:  # Forme "RXYY" ou "RXcyYY"
         return fait_partie
-    elif "S" == module[1] and int(module[3]) == 1:  # Forme commençant par "SAÉ"
+    elif "S" == module[1] and int(module[3]) != 1:  # Forme commençant par "SAÉ"
         return fait_partie
     else:
         num_competence = int(competence[2])
@@ -250,29 +251,29 @@ def exemple_export_markdown():
     entetes = ["Code", "Diminutif", "Discipline"]
     donnees = ["R102;ArchiRes;Réseaux", "R204;Téléphonie;Télécoms", "R107;Python1;Info"]
     donnees_split = [x.split(";") for x in donnees]
-    col_size = [len(x)+1 for x in entetes] # définit la largeur de chaque colonne
+    col_size = [len(x) + 1 for x in entetes]  # définit la largeur de chaque colonne
 
     # Vérifie que les données ne sont pas "plus large" que la colonne
     for size in range(len(col_size)):
         for data in range(len(donnees_split)):
-            if col_size[size] < len(donnees_split[data][size])+1:
-                col_size[size] = len(donnees_split[data][size])+1
+            if col_size[size] < len(donnees_split[data][size]) + 1:
+                col_size[size] = len(donnees_split[data][size]) + 1
 
     # Ligne d'entête (en comblant la largeur avec des espaces)
     print("|", end="")
     for i in range(len(entetes)):
-        print(f' {entetes[i]}{(col_size[i] - len(entetes[i]))*" "}|', end="")
+        print(f' {entetes[i]}{(col_size[i] - len(entetes[i])) * " "}|', end="")
 
     # Ligne du séparateur (selon la largeur) + 2
     print("\n|", end="")
     for j in range(len(entetes)):
-        print(f':{"-"*col_size[j]}|', end="")
+        print(f':{"-" * col_size[j]}|', end="")
 
     # Lignes des données (en alignant les colonnes en comblant avec des espaces)
     for k in range(len(donnees)):
         print("\n|", end="")
         for champ in range(len(donnees)):
-            print(f' {donnees_split[k][champ]}{(col_size[champ] - len(donnees_split[k][champ]) - 1)*" "} |', end="")
+            print(f' {donnees_split[k][champ]}{(col_size[champ] - len(donnees_split[k][champ]) - 1) * " "} |', end="")
 
     print("")
 
@@ -284,26 +285,35 @@ def nb_heures_par_modalite(calendrier):
         h_debut = recupere_champ_csv(event, "debut")
         h_fin = recupere_champ_csv(event, "fin")
         duree = calcule_nombre_minutes(calcule_duree(h_debut, h_fin))
-        heures[tools.tools_constantes.MODALITES.index(modalite)] += duree
+        heures[tools_constantes.MODALITES.index(modalite)] += duree
         heures[-1] += duree
 
     return [(x / 60) for x in heures]
 
 
 def repartition_moyenne_volume_horaire_competence(calendrier, competence):
-    repartition = [0, 0, 0, 0, 0]  # 1 pour chaque groupe
-    for i in range(1):
-        for event in calendrier:
-            evenement = event.split(";")
-            module = evenement[3].split("-")[0]
-            if est_dans_competence_S1(module, competence):
-                modalite = evenement[4]
-                duree = calcule_duree(recupere_champ_csv(event, "debut"), recupere_champ_csv(event, "fin"))
-                repartition[tools_constantes.MODALITES.index(modalite)] += calcule_nombre_minutes(duree)  # Tps modalité
-                repartition[-1] += calcule_nombre_minutes(duree)  # Tps total
+    """
+
+    Args:
+        calendrier (list of str): liste d'événement au format csv
+        competence (str): une compétence parmi : RT1-Administrer, RT2-Connecter et RT3-Programmer
+
+    Returns:
+        (list of int): liste des différents volumes horaires
+
+    """
+    repartition = [0, 0, 0, 0, 0]  # 1 pour chaque modalité
+    for event in calendrier:  # pour chaque evenement
+        evenement = event.split(";")  # On split l'événement
+        module = evenement[3].split("-")[0]  # on save la matière (SAEXXX, RXXX)
+        if est_dans_competence_S1(module, competence):  # on vérifie si le la compétence est dans le S1
+            modalite = evenement[4]  # Indique le type de cours
+            duree_h = calcule_duree(recupere_champ_csv(event, "debut"), recupere_champ_csv(event, "fin"))
+            repartition[tools_constantes.MODALITES.index(modalite)] += (calcule_nombre_minutes(duree_h) * len(evenement[-1].split("|")))  # Tps modalité
+            repartition[-1] += (calcule_nombre_minutes(duree_h) * len(evenement[-1].split("|")))  # Tps total
 
     for j in range(len(repartition)):
-        repartition[j] = round(((repartition[j] / 60) / 4), 2)
+        repartition[j] = format(((repartition[j] / 60) / 4), '.2f')
 
     return f'{competence};{repartition[0]};{repartition[1]};{repartition[2]};{repartition[3]};{repartition[4]}'
 
@@ -341,7 +351,7 @@ def main():
     # print(evenement.split(";"))
     # print(recupere_champ_csv(evenement, "fin"))
     #
-    calendrier = tools.tools_sae.lecture_fichier_evenements("data/all.csv")
+    calendrier = tools_sae.lecture_fichier_evenements("data/all.csv")
     # print('\n')
     #
     # print(selectionne_SAE105_groupe(calendrier, 'B1G4'))
@@ -350,13 +360,17 @@ def main():
     # print(f'Compétences : {tools_constantes.COMPETENCES}\nCoeffs : {tools_constantes.COEFFS_S1}')
     #
     # print("\n")
-    
+
     # sys.stdout = open("README.md", "w") # Uncomment to get output in a file WINDOWS
     # exemple_export_markdown()
     # print(tools.tools_constantes.MODALITES)
     print(nb_heures_par_modalite(calendrier))
-    print(tools.tools_constantes.COMPETENCES)
-    print(tools.tools_constantes.MODALITES)
+    print(tools_constantes.COMPETENCES)
+    print(tools_constantes.MODALITES)
+
+    print(repartition_moyenne_volume_horaire_competence(calendrier, 'RT1-Administrer'))
+
+    print(tools_constantes.COEFFS_S1)
 
 
 if __name__ == '__main__':
