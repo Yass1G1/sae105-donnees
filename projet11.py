@@ -378,6 +378,7 @@ def export_markdown(resultats, entetes):
 
 
 
+
 # Programme principal
 def main():
     # heure = "11:00"
