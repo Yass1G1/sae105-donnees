@@ -8,6 +8,9 @@ Création: chouitiy, le 14/11/2023
 # from tools import *
 import sys
 
+import matplotlib.pyplot as mp
+import numpy as np
+
 try:
     import tools_constantes
     import tools_sae
@@ -349,6 +352,15 @@ def traitement(calendrier):
 
 
 def export_markdown(resultats, entetes):
+    """
+
+    Args:
+        resultats: Liste des différents volumes horaires de chaque compétences
+        entetes: Liste des titres de colonnes
+
+    Returns:
+        None
+    """
     donnees_split = [x.split(";") for x in resultats]
     col_size = [len(x) + 1 for x in entetes]  # définit la largeur de chaque colonne
 
@@ -377,7 +389,17 @@ def export_markdown(resultats, entetes):
     print("")
 
 
+def export_png(resultats):
+    x = np.array(tools_constantes.COMPETENCES)
+    y1 = np.array([float(x.split(";")[-2]) for x in resultats])
+    y2 = np.array([float(x.split(";")[-3]) for x in resultats])
+    y3 = np.array([float(x.split(";")[-4]) for x in resultats])
 
+    mp.bar(x, y1, color='royalblue')
+    mp.bar(x, y2, bottom=y1, color='darkorange')
+    mp.bar(x, y3, bottom=y2, color='mediumseagreen')
+    mp.show()
+    mp.title("Volumes horaires au S1")
 
 # Programme principal
 def main():
@@ -431,13 +453,14 @@ def main():
 
     print(repartition_moyenne_volume_horaire_competence(calendrier, 'RT1-Administrer'))
     resultat_traitement = traitement(calendrier)
-    print(f'Traitement() : {resultat_traitement}\n')
+    print(f'\nRésultats Traitement() : \n\t{resultat_traitement}\n')
 
     # sys.stdout = open("README.md", "w")  # Uncomment to get output in a file WINDOWS
     export_markdown(resultat_traitement, ["COMPETENCE", "CM", "TD", "TP", "Proj", "TOTAL"])
 
     # print(tools_constantes.COEFFS_S1)
 
+    export_png(resultat_traitement)
 
 if __name__ == '__main__':
     main()
