@@ -183,7 +183,13 @@ class TestRepartitionMoyenneVolumeHoraireCompetence:
         assert isinstance(res, str), tools_tests.affiche_message_erreur(message)
 
     @pytest.mark.parametrize("data,competence,attendu", [
-        pytest.param("extrait_ade1.csv", "RT1-Administrer", "RT1-Administrer;0.00;1.50;0.50;0.00;2.00",
+        pytest.param("extrait_ade0.csv", "RT1-Administrer", "RT1-Administrer;0.00;3.00;0.00;0.00;3.00",
+                     id="extrait0 et RT1"),
+        pytest.param("extrait_ade0.csv", "RT2-Connecter", "RT2-Connecter;0.00;3.00;0.00;0.00;3.00",
+                     id="extrait0 et RT2"),
+        pytest.param("extrait_ade0.csv", "RT3-Programmer", "RT3-Programmer;0.00;3.50;0.00;0.00;3.50",
+                     id="extrait0 et RT3"),
+        pytest.param("extrait_ade1.csv", "RT1-Administrer", "RT1-Administrer;0.00;2.00;0.50;0.00;2.50",
                      id="extrait1 et RT1"),
         pytest.param("extrait_ade2.csv", "RT1-Administrer", "RT1-Administrer;1.00;3.50;1.50;0.75;6.75",
                      id="extrait2 et RT1"),
