@@ -391,15 +391,20 @@ def export_markdown(resultats, entetes):
 
 def export_png(resultats):
     x = np.array(tools_constantes.COMPETENCES)
-    y1 = np.array([float(x.split(";")[-2]) for x in resultats])
-    y2 = np.array([float(x.split(";")[-3]) for x in resultats])
-    y3 = np.array([float(x.split(";")[-4]) for x in resultats])
+    proj_y = np.array([float(x.split(";")[-2]) for x in resultats])
+    tp_y = np.array([float(x.split(";")[-3]) for x in resultats])
+    td_y = np.array([float(x.split(";")[-4]) for x in resultats])
+    cm_y = np.array([float(x.split(";")[-5]) for x in resultats])
 
-    mp.bar(x, y1, color='royalblue')
-    mp.bar(x, y2, bottom=y1, color='darkorange')
-    mp.bar(x, y3, bottom=y2, color='mediumseagreen')
-    mp.show()
+    mp.bar(x, cm_y, color='royalblue')
+    mp.bar(x, tp_y, bottom=cm_y, color='darkorange')
+    mp.bar(x, td_y, bottom=tp_y, color='mediumseagreen')
+    mp.bar(x, proj_y, bottom=td_y+tp_y, color='purple')
     mp.title("Volumes horaires au S1")
+    mp.savefig("figure.png")
+    mp.show()
+
+
 
 # Programme principal
 def main():
@@ -449,7 +454,7 @@ def main():
     # print(tools.tools_constantes.MODALITES)
     print(f'Nombre heure par modalité : {nb_heures_par_modalite(calendrier)}')
     # print(tools_constantes.COMPETENCES)
-    # print(tools_constantes.MODALITES)
+    print(tools_constantes.MODALITES)
 
     print(repartition_moyenne_volume_horaire_competence(calendrier, 'RT1-Administrer'))
     resultat_traitement = traitement(calendrier)
@@ -461,6 +466,8 @@ def main():
     # print(tools_constantes.COEFFS_S1)
 
     export_png(resultat_traitement)
+
+
 
 if __name__ == '__main__':
     main()
