@@ -424,6 +424,11 @@ def export_png(resultats):
 
 # Programme principal
 def main():
+    calendrier = tools_sae.lecture_fichier_evenements("data/all.csv")
+
+    resultats = traitement(calendrier)
+
+    export_png(resultats)
 
 
 if __name__ == '__main__':
