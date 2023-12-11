@@ -251,6 +251,13 @@ def selectionne_creneaux_groupe_competence(calendrier, groupe, competence):
 
 
 def exemple_export_markdown():
+    """
+    Renvoi un tableau markdown selon des données initialisées dans la fonction
+
+    Returns:
+        None
+
+    """
     entetes = ["Code", "Diminutif", "Discipline"]
     donnees = ["R102;ArchiRes;Réseaux", "R204;Téléphonie;Télécoms", "R107;Python1;Info"]
     donnees_split = [x.split(";") for x in donnees]
@@ -267,7 +274,7 @@ def exemple_export_markdown():
     for i in range(len(entetes)):
         print(f' {entetes[i]}{(col_size[i] - len(entetes[i])) * " "}|', end="")
 
-    # Ligne du séparateur (selon la largeur) + 2
+    # Ligne du séparateur (selon la largeur) + 2 ([0] = ":" et [-1] = "-")
     print("\n|", end="")
     for j in range(len(entetes)):
         print(f':{"-" * col_size[j]}|', end="")
@@ -282,6 +289,15 @@ def exemple_export_markdown():
 
 
 def nb_heures_par_modalite(calendrier):
+    """
+
+    Args:
+        calendrier (list of str): Liste d'événement sous forme de str
+
+    Returns:
+        (list of floats): nombre d'heures par modalité (TP, CM etc.)
+
+    """
     heures = [0, 0, 0, 0, 0]
     for event in calendrier:
         modalite = recupere_champ_csv(event, "modalite")
@@ -403,64 +419,7 @@ def export_png(resultats):
 
 # Programme principal
 def main():
-    # heure = "11:00"
-    # print(calcule_nombre_minutes(heure))
-    #
-    # evenement1 = "31-10-2021"
-    # evenement2 = "17-01-2022"
-    # event1_l = evenement1.split("-")
-    # event2_l = evenement2.split("-")
-    # jours = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"]
-    #
-    # print(
-    #     f'\tJour de {evenement1} : {jours[tools_date.get_numero_jour_semaine(int(event1_l[0]), int(event1_l[1]), int(event1_l[2]))]}')
-    # print(
-    #     f'\tJour de {evenement2} : {jours[tools_date.get_numero_jour_semaine(int(event2_l[0]), int(event2_l[1]), int(event2_l[2]))]}')
-    #
-    # event1_demain = tools_date.lendemain(evenement1).split("-")
-    # event2_demain = tools_date.lendemain(evenement2).split("-")
-    #
-    # print(
-    #     f'\tLendemain de {evenement1} : {jours[tools_date.get_numero_jour_semaine(int(event1_demain[0]), int(event1_demain[1]), int(event1_demain[2]))]}')
-    # print(
-    #     f'\tLendemain de {evenement2} : {jours[tools_date.get_numero_jour_semaine(int(event2_demain[0]), int(event2_demain[1]), int(event2_demain[2]))]}')
-    #
-    # print(est_date_dans_intervalle("15-12-2020", "01-01-2021", "31-01-2021"))
-    # print(compare_dates(evenement1, evenement2))
-    #
-    # print(tools_date.nombre_jours(evenement1, evenement2))
-    #
-    # evenement = "ADE0000988;05-09-2023;08:00|12:00;R3cy16-Pentesting;TP;;;IUT1_T33 res1;LUBINEAU DENIS|VEDEL FRANCK;B2GA"
-    # print(evenement.split(";"))
-    # print(recupere_champ_csv(evenement, "fin"))
-    #
-    calendrier = tools_sae.lecture_fichier_evenements("data/all.csv")
-    # print('\n')
-    #
-    # print(selectionne_SAE105_groupe(calendrier, 'B1G4'))
-    # print('\n')
-    #
-    # print(f'Compétences : {tools_constantes.COMPETENCES}\nCoeffs : {tools_constantes.COEFFS_S1}')
-    #
-    # print("\n")
 
-    # sys.stdout = open("README.md", "w") # Uncomment to get output in a file WINDOWS
-    # exemple_export_markdown()
-    # print(tools.tools_constantes.MODALITES)
-    print(f'Nombre heure par modalité : {nb_heures_par_modalite(calendrier)}')
-    # print(tools_constantes.COMPETENCES)
-    # print(tools_constantes.MODALITES)
-
-    print(repartition_moyenne_volume_horaire_competence(calendrier, 'RT1-Administrer'))
-    resultat_traitement = traitement(calendrier)
-    print(f'\nRésultats Traitement() : \n\t{resultat_traitement}\n')
-
-    # sys.stdout = open("README.md", "w")  # Uncomment to get output in a file WINDOWS
-    export_markdown(resultat_traitement, ["COMPETENCE", "CM", "TD", "TP", "Proj", "TOTAL"])
-
-    # print(tools_constantes.COEFFS_S1)
-
-    export_png(resultat_traitement)
 
 if __name__ == '__main__':
     main()
