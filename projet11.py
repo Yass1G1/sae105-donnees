@@ -428,6 +428,7 @@ def main():
 
     resultats = traitement(calendrier)
 
+    export_markdown(resultats, ["COMPETENCES", "CM", "TD", "TP", "Projet"])
     export_png(resultats)
 
 
