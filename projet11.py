@@ -10,6 +10,9 @@ import sys
 
 import matplotlib.pyplot as mp
 import numpy as np
+import pandas as pd
+import pandas as pds
+import plotnine as pltn
 
 try:
     import tools_constantes
@@ -412,13 +415,27 @@ def export_png(resultats):
     td_y = np.array([float(x.split(";")[-4]) for x in resultats])
     cm_y = np.array([float(x.split(";")[-5]) for x in resultats])
 
-    mp.bar(x, cm_y, color='royalblue')
-    mp.bar(x, tp_y, bottom=cm_y, color='darkorange')
-    mp.bar(x, td_y, bottom=tp_y, color='mediumseagreen')
-    mp.bar(x, proj_y, bottom=td_y+tp_y, color='purple')
+    mp.bar(x, cm_y, color='#5D70C1')
+    mp.bar(x, tp_y, bottom=cm_y, color='#2A2E46')
+    mp.bar(x, td_y, bottom=tp_y, color='#E84E0F')
+    mp.bar(x, proj_y, bottom=td_y+tp_y, color='#FFE6DF')
     mp.title("Volumes horaires au S1")
     mp.savefig("figure.png")
     mp.show()
+
+# def export_png_bis(resultats):
+#     events = [x.split(";") for x in resultats]
+#     data = {'Compétence': {0: 'RT1-Administrer', 1: 'RT2-Connecter', 2: 'RT3-Programmer'},
+#         'RT1-Administrer': {'CM': events[0][1], 'TD':events[0][2], 'TP': events[0][3], 'Proj': events[0][4]},
+#             'RT2-Connecter': {'CM': events[1][1], 'TD': events[1][2], 'TP': events[1][3], 'Proj': events[1][4]},
+#             'RT3-Programmer': {'CM': events[2][1], 'TD': events[2][2], 'TP': events[2][3], 'Proj': events[2][4]}}
+#
+#     df = pd.DataFrame(data)
+#     df_melt = pd.melt(df, id_vars=['Compétence'], value_vars=['RT1-Administrer', 'RT2-Connecter', 'RT3-Programmer'])
+#     print(df_melt)
+#
+#     #print(df)
+
 
 
 
@@ -430,6 +447,7 @@ def main():
 
     export_markdown(resultats, ["COMPETENCES", "CM", "TD", "TP", "Projet"])
     export_png(resultats)
+    # export_png_bis(resultats)
 
 
 if __name__ == '__main__':
