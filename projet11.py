@@ -6,13 +6,13 @@ Création: chouitiy, le 14/11/2023
 
 # Imports
 # from tools import *
-import sys
+# import sys
 
 import matplotlib.pyplot as mp
 import numpy as np
-import pandas as pd
-import pandas as pds
-import plotnine as pltn
+# import pandas as pd
+# import pandas as pds
+# import plotnine as pltn
 
 try:
     import tools_constantes
@@ -435,8 +435,6 @@ def export_png(resultats):
 #     print(df_melt)
 #
 #     #print(df)
-
-
 
 
 # Programme principal
