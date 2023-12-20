@@ -58,7 +58,7 @@ def calcule_duree(heure_debut, heure_fin):
 
 def compare_heures(heure1, heure2):
     """
-    Renvoi 1, 0, ou 1 si heure1 est après, avant ou pareil que heure2.
+    Renvoi 1, 0, ou 1 si heure1 est après, avant ou pareil que heure2 (respectivement).
         :param heure1 (str): la première heure
         :param heure2 (str): la seconde heure
         :return (int): Résultat de comparaison
@@ -117,7 +117,7 @@ def est_date_dans_intervalle(date, debut, fin):
 
 def recupere_champ_csv(evenement, nom):
     """
-    Renvoi le champ "nom" dans l'évènement spécifié.
+    Sélectionne et renvoi le champ "nom" dans l'évènement spécifié.
         Args:
             evenement (str): évènement au format csv
             nom (str): nom du champ spécifique
@@ -142,6 +142,7 @@ def recupere_champ_csv(evenement, nom):
 
 def selectionne_SAE105_groupe(calendrier, groupe):
     """
+    Extrait les évènements relatifs à la SAE105 auxquels assiste le groupe de TD "groupe".
     Args:
         calendrier (str): Une liste d'évènements ADE
         groupe (str): Un groupe de TD
@@ -162,6 +163,7 @@ def selectionne_SAE105_groupe(calendrier, groupe):
 
 def selectionne_ressources_groupe(calendrier, groupe):
     """
+    Extrait les évènements auxquels assiste le groupe de TD "groupe".
     Args:
         calendrier (str): Une liste d'évènements ADE
         groupe (str): Un groupe de TD
@@ -181,6 +183,7 @@ def selectionne_ressources_groupe(calendrier, groupe):
 
 def deduit_annee_du_module(module):
     """
+    Déduit l'année d'un module "module" à partir de son code.
     Args:
         module (str): Le module
 
@@ -199,6 +202,7 @@ def deduit_annee_du_module(module):
 
 def deduit_annee_du_groupe(groupe):
     """
+    Déduit l'année du groupe de TD.
     Args:
         groupe (str): Le groupe
 
@@ -210,6 +214,7 @@ def deduit_annee_du_groupe(groupe):
 
 def est_dans_competence_S1(module, competence):
     """
+    Vérifie si un module fait bien parti du S1 ET de la compétence "competence".
     Args:
         module (str): Un module (code & diminutif)
         competence (str): Une compétence
@@ -236,12 +241,14 @@ def est_dans_competence_S1(module, competence):
 
 def selectionne_creneaux_groupe_competence(calendrier, groupe, competence):
     """
+    Extrait la liste d'évènement auxquels participent le groupe de TD, selon un module d'une competence du S1.
     Args:
-        calendrier:
-        groupe:
-        competence:
+        calendrier (list of str): Liste d'évènement
+        groupe (str): Groupe de TD
+        competence (str): Compétence
 
     Returns:
+        (list of str): Liste d'évènement qui respecent les conditions de groupe et de coméptence.
     """
     event_list = []
     for event in calendrier:
@@ -255,8 +262,7 @@ def selectionne_creneaux_groupe_competence(calendrier, groupe, competence):
 
 def exemple_export_markdown():
     """
-    Renvoi un tableau markdown selon des données initialisées dans la fonction
-
+    Affiche un tableau markdown selon des données initialisées dans la fonction
     Returns:
         None
 
@@ -293,7 +299,7 @@ def exemple_export_markdown():
 
 def nb_heures_par_modalite(calendrier):
     """
-
+    Renvoi le nombre d'heure par modalité.
     Args:
         calendrier (list of str): Liste d'événement sous forme de str
 
@@ -314,7 +320,7 @@ def nb_heures_par_modalite(calendrier):
 
 def repartition_moyenne_volume_horaire_competence(calendrier, competence):
     """
-
+    Calcule la répartition moyenne des voluymes horaires par modalité des modules du S1 ayant trait à une compétence.
     Args:
         calendrier: Liste d'événement
         competence: Une compétence parmi 'RT1-Administrer', 'RT2-Connecter', 'RT3-Programmer'
@@ -360,7 +366,7 @@ def repartition_moyenne_volume_horaire_competence(calendrier, competence):
 
 def traitement(calendrier):
     """
-
+    Calcule pour les 3 compétences du S1 la répartition des volumes horaires par modalité, en donnant les moyennes par groupe.
     Args:
         calendrier: Liste d'événement
 
@@ -372,7 +378,7 @@ def traitement(calendrier):
 
 def export_markdown(resultats, entetes):
     """
-
+    Affiche un tableau markdown selon les données passées en paramètre.
     Args:
         resultats: Liste des différents volumes horaires de chaque compétences
         entetes: Liste des titres de colonnes
@@ -409,6 +415,14 @@ def export_markdown(resultats, entetes):
 
 
 def export_png(resultats):
+    """
+    Affiche une graphique présentant la répartion du volume horaire selon chaque modalité pour chaque compétence.
+    Args:
+        resultats (list of str): Volumes horaires par compétence
+
+    Returns:
+        None
+    """
     x = np.array(tools_constantes.COMPETENCES)
     proj_y = np.array([float(x.split(";")[-2]) for x in resultats])
     tp_y = np.array([float(x.split(";")[-3]) for x in resultats])
