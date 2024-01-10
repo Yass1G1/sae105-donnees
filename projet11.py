@@ -8,9 +8,11 @@ Création: chouitiy, le 14/11/2023
 # from tools import *
 # import sys
 
-import matplotlib.pyplot as mp
-import matplotlib.table as table
+import matplotlib.pyplot as plt
+import matplotlib.table as Table
+from matplotlib.gridspec import GridSpec
 import numpy as np
+
 # import pandas as pd
 # import pandas as pds
 # import plotnine as pltn
@@ -319,6 +321,7 @@ def nb_heures_par_modalite(calendrier):
 
     return [(x / 60) for x in heures]
 
+
 def repartition_moyenne_volume_horaire_competence(calendrier, competence):
     """
     Calcule la répartition moyenne des voluymes horaires par modalité des modules du S1 ayant trait à une compétence.
@@ -332,11 +335,10 @@ def repartition_moyenne_volume_horaire_competence(calendrier, competence):
 
     all_groups = [[0, 0, 0, 0, 0] for x in range(4)]
     for i in range(4):
-        groupe = "B1G" + str(i+1)
+        groupe = "B1G" + str(i + 1)
         for event in calendrier:
             module = recupere_champ_csv(event, "modules")
             if est_dans_competence_S1(module, competence) and groupe in recupere_champ_csv(event, "groupes"):
-
                 # Durée en minute
                 debut = recupere_champ_csv(event, "debut")
                 fin = recupere_champ_csv(event, "fin")
@@ -374,7 +376,8 @@ def traitement(calendrier):
     Returns:
         (list of str): Liste du rapport de volume horaire par compétence
     """
-    return [repartition_moyenne_volume_horaire_competence(calendrier, tools_constantes.COMPETENCES[x]) for x in range(3)]
+    return [repartition_moyenne_volume_horaire_competence(calendrier, tools_constantes.COMPETENCES[x]) for x in
+            range(3)]
 
 
 def export_markdown(resultats, entetes):
@@ -415,6 +418,31 @@ def export_markdown(resultats, entetes):
     print("")
 
 
+# def export_png(resultats):
+#     """
+#     Affiche une graphique présentant la répartion du volume horaire selon chaque modalité pour chaque compétence.
+#     Args:
+#         resultats (list of str): Volumes horaires par compétence
+#
+#     Returns:
+#         None
+#     """
+#     x = np.array(tools_constantes.COMPETENCES)
+#     proj_y = np.array([float(x.split(";")[-2]) for x in resultats])
+#     tp_y = np.array([float(x.split(";")[-3]) for x in resultats])
+#     td_y = np.array([float(x.split(";")[-4]) for x in resultats])
+#     cm_y = np.array([float(x.split(";")[-5]) for x in resultats])
+#
+#     mp.bar(x, cm_y, color='#5D70C1')
+#     mp.bar(x, tp_y, bottom=cm_y, color='#2A2E46')
+#     mp.bar(x, td_y, bottom=tp_y, color='#E84E0F')
+#     mp.bar(x, proj_y, bottom=td_y+tp_y, color='#FFE6DF')
+#     mp.title("Volumes horaires au S1")
+#
+#     mp.savefig("figure.png")
+#     mp.show()
+
+
 def export_png(resultats):
     """
     Affiche une graphique présentant la répartion du volume horaire selon chaque modalité pour chaque compétence.
@@ -424,20 +452,40 @@ def export_png(resultats):
     Returns:
         None
     """
+    # Vos données existantes
+    # Vos données existantes
     x = np.array(tools_constantes.COMPETENCES)
     proj_y = np.array([float(x.split(";")[-2]) for x in resultats])
     tp_y = np.array([float(x.split(";")[-3]) for x in resultats])
     td_y = np.array([float(x.split(";")[-4]) for x in resultats])
     cm_y = np.array([float(x.split(";")[-5]) for x in resultats])
 
-    mp.bar(x, cm_y, color='#5D70C1')
-    mp.bar(x, tp_y, bottom=cm_y, color='#2A2E46')
-    mp.bar(x, td_y, bottom=tp_y, color='#E84E0F')
-    mp.bar(x, proj_y, bottom=td_y+tp_y, color='#FFE6DF')
-    mp.title("Volumes horaires au S1")
-    
-    mp.savefig("figure.png")
-    mp.show()
+    fig, ax = plt.subplots()
+
+    # Tracer le diagramme à colonnes empilées
+    ax.bar(x, cm_y, color='#5D70C1', label='CM')
+    ax.bar(x, tp_y, bottom=cm_y, color='#2A2E46', label='TP')
+    ax.bar(x, td_y, bottom=tp_y, color='#E84E0F', label='TD')
+    ax.bar(x, proj_y, bottom=td_y + tp_y, color='#FFE6DF', label='Projets')
+
+    ax.legend()
+    ax.set_title("Volumes horaires au S1")
+
+    # Ajouter le tableau en dessous du graphique
+    table_data = [[" ", " ", " ", " "],
+                  ["Proj", proj_y[0], proj_y[1], proj_y[2]],
+                  ["TD", tp_y[0], tp_y[1], tp_y[2]],
+                  ["TP", td_y[0], td_y[1], td_y[2]],
+                  ["CM", cm_y[0], cm_y[1], cm_y[2]]]
+
+    table = Table.table(ax, cellText=table_data, loc='bottom', colWidths=[0.2] * len(table_data[0]))
+    table.scale(1.3, 1.5)  # Ajustez la taille du tableau selon vos besoins
+
+    ax.add_table(table)
+
+    plt.savefig("figure.png")
+    plt.show()
+
 
 # def export_png_bis(resultats):
 #     events = [x.split(";") for x in resultats]
