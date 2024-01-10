@@ -9,6 +9,7 @@ Création: chouitiy, le 14/11/2023
 # import sys
 
 import matplotlib.pyplot as mp
+import matplotlib.table as table
 import numpy as np
 # import pandas as pd
 # import pandas as pds
@@ -420,6 +421,7 @@ def export_png(resultats):
     mp.bar(x, td_y, bottom=tp_y, color='#E84E0F')
     mp.bar(x, proj_y, bottom=td_y+tp_y, color='#FFE6DF')
     mp.title("Volumes horaires au S1")
+    
     mp.savefig("figure.png")
     mp.show()
 
